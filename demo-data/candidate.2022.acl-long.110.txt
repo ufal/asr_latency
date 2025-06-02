@@ -1,0 +1,378 @@
+2600.0000 764 2600  Hello, this is
+4440.0000 2600 4440  Jiawei Zhou from Harvard
+6280.0000 4440 6280  University. I am very glad to present our
+8120.0000 6280 8120  work on online semantic parsing
+9960.0000 8120 9960  for latency reduction in
+11800.0000 9960 11800  task-oriented dialogue. This is
+13640.0000 11800 13640  joint work with Jason,
+15480.0000 13640 15480  Michael, Anthony, and Sam from Microsoft
+16240.0000 15480 16200  Semantic Machines.
+20040.0000 18204 20040  In
+21880.0000 20040 21880  task-oriented dialogue, a user
+23720.0000 21880 23720  interacts with the system that handles
+25560.0000 23720 25560  requests from user
+27400.0000 25560 27400  utterances, usually in speaking.
+29240.0000 27400 29240  From the finish of the user utterance to the
+31080.0000 29240 31080  system response, there is
+32120.0000 31080 32080  often a noticeable delay.
+34080.0000 32252 34080  Under the
+35920.0000 34080 35920  hood, the user utterance is
+37760.0000 35920 37760  translated into an
+39600.0000 37760 39600  executable program, which is then
+41440.0000 39600 41440  executed so that the system can
+43280.0000 41440 43280  respond properly. Here the
+45120.0000 43280 45120  program is represented as a
+46960.0000 45120 46960  semantic graph that outlines
+48800.0000 46960 48800  the computation,
+50640.0000 48800 50640  where a note represents a function
+52480.0000 50640 52480  invocation and its children are the
+54320.0000 52480 54320  arguments. The great notes mark
+56160.0000 54320 56160  instantaneous operations, but
+58000.0000 56160 58000  the others are slow to
+59840.0000 58000 59840  execute. Note that unlike the
+61680.0000 59840 61680  simple example here we show, these
+63520.0000 61680 63520  programs can often be more
+65360.0000 63520 65360  complicated graphs beyond
+66080.0000 65360 66040  the tree structures.
+68000.0000 66172 68000  In this
+69840.0000 68000 69840  talk, we ask the
+71640.0000 69840 71640  question, can we start generating the program
+73480.0000 71640 73480  and executing it before
+75320.0000 73480 75320  the user even finishes the
+77160.0000 75320 77160  alterings so that the faster response
+78400.0000 77160 78360  can be achieved by the system
+80320.0000 78396 80200 ? This is an
+82160.0000 80200 82040  online prediction and decision
+84000.0000 82040 83880  problem. There are a lot of others in this
+85840.0000 83880 85720  realm. Examples include
+87680.0000 85720 87560  simultaneous translation,
+89520.0000 87560 89400  where a live interpreter
+91360.0000 89400 91240  translates one language to another in real
+93200.0000 91240 93080  time, smart text
+95040.0000 93080 94920  auto-completion to guess the user
+96880.0000 94920 96760  intent, and
+98720.0000 96760 98600  UberPool, where the drivers are sent to
+100560.0000 98600 100440  where they might be needed based on the
+102400.0000 100440 102280  predicted
+104240.0000 102280 104120  demand. All of these scenarios have one thing in
+106080.0000 104120 105960  common, that is, it is
+107920.0000 105960 107800  beneficial to make decisions before
+109760.0000 107800 109640  seeing all the
+111600.0000 109640 111480  input. In our case, we are
+113440.0000 111480 113320  going to deal with online semantic
+115280.0000 113320 115160  parsing, which could be expected
+117120.0000 115160 117000  to be
+118960.0000 117000 118840  challenging, as we have to guess what the user might
+120800.0000 118840 120680  say, and it is also
+122640.0000 120680 122520  underexplored with no formal
+123280.0000 122520 123120  evaluation metric.
+126920.0000 125116 126920  First,
+128760.0000 126920 128760  let's look at how an ordinary system
+130600.0000 128760 130600  works. It is operating
+132440.0000 130600 132440  offline, by parsing to the program
+134280.0000 132440 134280  only at the end of the user
+136120.0000 134280 136120  audience. Here, the
+137960.0000 136120 137960  cryptograph is predicted after seeing all
+138360.0000 137960 138320  the information.
+140200.0000 138396 140200  In
+142040.0000 140200 142040  contrast, we are proposing an online
+143880.0000 142040 143880  system that can parse at every
+145720.0000 143880 145720  audience prefix. For
+147560.0000 145720 147560  example, each time we see a
+149400.0000 147560 149400  new token, we predict a new
+151080.0000 149400 151040  graph. Notice that there could be errors.
+153000.0000 151068 152880  At the position
+154840.0000 152880 154720  of "at the pool party with Barack
+156680.0000 154720 156560  Obama", we get a graph with
+158520.0000 156560 158400  the red nodes on the
+160360.0000 158400 160240  person and the event subject, but
+161800.0000 160240 161640  guess the wrong timing information.
+163640.0000 161724 163564  This process goes
+165480.0000 163564 165404  on until we receive the
+166280.0000 165404 166164  full user
+169080.0000 167260 169080  audience. How would this
+170920.0000 169080 170920  affect the execution
+172760.0000 170920 172760  timeline? In the offline system,
+174600.0000 172760 174600  we get the program graph at the
+176440.0000 174600 176440  end so that the system can start execution
+178280.0000 176440 178280  at this point. Remember
+180120.0000 178280 180120  that the gray nodes are fast
+181960.0000 180120 181960  operations, so we only consider the
+183800.0000 181960 183800  execution timeline of the colored
+184320.0000 183800 184280  slow functions.
+188200.0000 184540 188200  First, these two find person functions
+190040.0000 188200 190040  can be executed in
+191880.0000 190040 191880  parallel, highlighted in white from the pink
+193720.0000 191880 193720  box, and they have
+195560.0000 193720 195560  no dependency on other
+197400.0000 195560 197400  functions. Next, the node
+199240.0000 197400 199240  create event can then get
+201080.0000 199240 201080  executed after obtaining results
+202920.0000 201080 202920  from lower level
+204760.0000 202920 204760  nodes, and then the top function yield,
+206600.0000 204760 206600  so the whole program is
+208440.0000 206600 208440  finished. The execution process is
+210280.0000 208440 210280  restricted to the program
+212120.0000 210280 212120  dependency structure, where some
+213960.0000 212120 213960  operations cannot be
+215800.0000 213960 215800  parallelized, which induces a
+216320.0000 215800 216280  noticeable delay.
+220040.0000 218236 220040  In our online
+221880.0000 220040 221880  system, where we predict as we
+223720.0000 221880 223720  go, the program execution can
+224120.0000 223720 224080  start earlier.
+226320.0000 224508 226320  Here, at the
+228160.0000 226320 228160  prefix after Obama, we
+230000.0000 228160 230000  predict confidently that the
+231840.0000 230000 231840  findPerson function should be in the
+233680.0000 231840 233680  program, but the rest may contain errors
+234600.0000 233680 234560  as they are grayed out.
+236600.0000 234780 236600  The execution
+238440.0000 236600 238440  of the node can be immediately
+239240.0000 238440 239200  started at this step.
+243200.0000 239548 243200  Then, with more tokens, we predict
+245040.0000 243200 245040  a totally new graph, but part of
+246880.0000 245040 246880  it is already being
+248720.0000 246880 248720  executed, so we only need to consider the rest
+250560.0000 248720 250560  of the nodes that we are confident
+252400.0000 250560 252400  about as
+254240.0000 252400 254240  well. Here, another findPerson can be executed in
+254640.0000 254240 254600  parallel.
+256520.0000 254716 256520  Again, we may
+257560.0000 256520 257520  have wrong predictions.
+259400.0000 257596 259400  With more
+261240.0000 259400 261240  text, we have more ability
+263080.0000 261240 263080  to make it right, such as the event
+264920.0000 263080 264920  time here, where am
+266720.0000 264920 266680  is also anticipated correctly.
+268760.0000 266940 268760  Then, we can
+270600.0000 268760 270600  start executing the
+272160.0000 270600 272120  rest, following the program dependency structure.
+274040.0000 272220 274040  By
+275880.0000 274040 275880  overlapping the execution timeline with
+277720.0000 275880 277720  the alternates timeline, we save
+278680.0000 277720 278640  a big amount of time
+282920.0000 281084 282920 . So we propose the
+284760.0000 282920 284760  task of online semantic
+286600.0000 284760 286600  parsing. One underlying
+288440.0000 286600 288440  assumption is that the execution
+290240.0000 288440 290240  time dominates the model prediction
+292080.0000 290240 292080  time, so we could only
+293920.0000 292080 293920  gain time by predicting
+295760.0000 293920 295760  earlier. Another assumption is that
+297600.0000 295760 297600  as the prediction and execution
+299440.0000 297600 299440  happen in the background that is not visible to
+301280.0000 299440 301280  users, it is not
+303120.0000 301280 303120  necessary to maintain a consistent
+304960.0000 303120 304960  parsing
+306800.0000 304960 306800  history, so we reparse from scratch after each
+308640.0000 306800 308640  token. In particular,
+310480.0000 308640 310480  we propose a two-step
+312320.0000 310480 312320  approach, a proposed step that
+314160.0000 312320 314160  predicts a graph with complete
+316000.0000 314160 316000  structure, and a select
+317840.0000 316000 317840  step that selects the nodes
+319640.0000 317840 319600  that are worth executing at this time.
+323080.0000 321276 323080  We have two
+324920.0000 323080 324920  variants of the proposed
+326760.0000 324920 326760  method. First approach combines a
+328600.0000 326760 328600  language model completion with full
+329600.0000 328600 329560  utterance-to-graph parsing
+331480.0000 329660 331480 . In
+333320.0000 331480 333320  particular, the prefix after Obama is
+335160.0000 333320 335160  first completed through a
+337000.0000 335160 337000  fine-tuned BART language model and
+338840.0000 337000 338840  then translated into
+340480.0000 338840 340440  a program with full offline parser.
+342720.0000 340892 342720  The second approach
+344560.0000 342720 344560  directly predicts the program from
+346400.0000 344560 346400  user-utterance
+348240.0000 346400 348240  prefixes. This is achieved by
+350080.0000 348240 350080  training a single online
+351920.0000 350080 351920  parser to translate to the Go graph
+353760.0000 351920 353760  from each prefix. This
+355600.0000 353760 355600  facilitates the model to learn the right
+356120.0000 355600 356080  anticipation.
+359360.0000 357532 359360  In a bit more
+361200.0000 359360 361200  detail, how do we generate these
+363040.0000 361200 363040  graphs? We formulate the
+364880.0000 363040 364880  problem by generating a serial
+366720.0000 364880 366720  version of the
+368560.0000 366720 368560  graph. Each node or edge is represented by
+370400.0000 368560 370400  an
+372240.0000 370400 372240  action. Here, we start from the first
+374080.0000 372240 374080  node. The number below records the
+375840.0000 374080 375800  absolute index in action history.
+377800.0000 375996 377800  Then, we get
+379640.0000 377800 379640  the second node. Next
+381480.0000 379640 381480  is the edge between them. It
+383320.0000 381480 383320  contains a pointer to the index of
+385160.0000 383320 385160  a previous node and the edge
+387000.0000 385160 387000  label. Zero here
+388840.0000 387000 388840  means connecting the most recent
+390680.0000 388840 390680  node with the node generated by the
+392520.0000 390680 392520  zeroth
+394360.0000 392520 394360  action. And next node, next edge. This
+396200.0000 394360 396200  process goes on until
+397440.0000 396200 397400  we generate the full graph.
+399400.0000 397564 399400  The underlying
+401240.0000 399400 401240  model is based on transformer with
+403080.0000 401240 403080  self-pointing mechanism, similar
+404760.0000 403080 404720  to a previous transition-based parser.
+408240.0000 406428 408240  After generating
+410080.0000 408240 410080  a complete
+411920.0000 410080 411920  graph, we obtain the action level
+413760.0000 411920 413760  probabilities that correspond to different parts
+415600.0000 413760 415600  of the graph. We select
+417440.0000 415600 417440  confident subgraphs based on
+419280.0000 417440 419280  the thresholding heuristic to be
+421120.0000 419280 421120  executed. Later on, we are
+422960.0000 421120 422960  going to vary the threshold to achieve
+424800.0000 422960 424800  different trade-offs between the latency
+426400.0000 424800 426360  reduction and the execution cost.
+429760.0000 427932 429760  For formal
+431600.0000 429760 431600  evaluation of the online
+433440.0000 431600 433440  methods, we propose final latency
+435280.0000 433440 435280  reduction or FLR
+437120.0000 435280 437120  metric. Here's a recap of
+438960.0000 437120 438960  how an offline system finishes
+439920.0000 438960 439880  the execution timeline.
+441840.0000 440028 441840  In online
+443680.0000 441840 443680  systems, execution
+445520.0000 443680 445520  overlaps with the alternate timeline, so
+447360.0000 445520 447360  it ends
+449200.0000 447360 449200  earlier. FLR is defined as the
+451040.0000 449200 451040  reduction time compared to the offline
+452880.0000 451040 452880  system marked by the end of
+453240.0000 452880 453200  the execution.
+457000.0000 455196 457000  We conduct
+458840.0000 457000 458840  experiments on two large
+460680.0000 458840 460680  conversational semantic parsing
+462520.0000 460680 462520  dataset, SM-CALFLOW and
+464360.0000 462520 464360  3DST. Our graph-based
+466200.0000 464360 466200  parser, when operating
+468040.0000 466200 468040  offline, achieves state-of-the-art
+469880.0000 468040 469880  performance on parsing on
+471720.0000 469880 471720  both datasets. The
+473560.0000 471720 473560  outline-complete model also achieves
+475400.0000 473560 475400  non-trivial blue gain
+477240.0000 475400 477240  compared with the simple baseline of
+477760.0000 477240 477720  no completion.
+481600.0000 479772 481600  Now let's look
+483440.0000 481600 483440  at the prediction accuracy of
+485280.0000 483440 485280  our prefixed graph
+487120.0000 485280 487120  parser. We test the matched F1
+488960.0000 487120 488960  score of graph tuples between the
+490800.0000 488960 490800  generation and the goal
+492640.0000 490800 492640  graph invalidation data in
+494480.0000 492640 494480  y-axis for each prefix
+496320.0000 494480 496320  length in x-axis
+498160.0000 496320 498160  represented by
+500000.0000 498160 500000  percentages. Each of these curves
+501840.0000 500000 501840  represents a different model with the only
+503680.0000 501840 503680  difference in training
+505520.0000 503680 505520  data. The bottom curve is the offline
+507360.0000 505520 507360  parser, and we mix in
+509200.0000 507360 509200  prefix data in different lengths
+511040.0000 509200 511040  to transition the model to an
+512880.0000 511040 512880  online parser. For
+514720.0000 512880 514720  example, the legend prefix
+516560.0000 514720 516560  80%+ means the model
+518400.0000 516560 518400  is trained with prefix data
+520240.0000 518400 520240  with prefix length larger than
+522080.0000 520240 522080  80% of the full utterance
+523920.0000 522080 523920  length. The upper left corner
+525760.0000 523920 525760  is the design area.
+527600.0000 525760 527600  As we can see, the offline
+529440.0000 527600 529440  parser in black
+531280.0000 529440 531280  curve is not doing well on the prefix
+534960.0000 531280 534960  data. As we mix in more prefixes in training,
+536800.0000 534960 536800  the curve is lifting upper
+538640.0000 536800 538640  and left, performing better
+540480.0000 538640 540480  on all the prefix
+542320.0000 540480 542320  length. However, the full
+544160.0000 542320 544160  utterance parsing performance is not
+546000.0000 544160 546000  affected in the upper right
+546080.0000 546000 546040  dot.
+549360.0000 547548 549360  Based on these strong
+551200.0000 549360 551200  results, how much latency do we
+553040.0000 551200 553040  reduce? We measure the
+554880.0000 553040 554880  time by the number of source
+556720.0000 554880 556720  tokens and simulate different function
+558560.0000 556720 558560  execution times. The
+560400.0000 558560 560400  curves show the trade-off between the
+562240.0000 560400 562240  FLR metric and the execution
+564080.0000 562240 564080  cost,
+565920.0000 564080 565920  measured by the number of excessive function costs that
+567760.0000 565920 567760  are not correct. This is
+569600.0000 567760 569600  achieved by varying the subgraph
+571440.0000 569600 571440  selection threshold. A higher
+573280.0000 571440 573280  threshold selects fewer functions of
+575120.0000 573280 575120  mistake but obtains a smaller
+576960.0000 575120 576960  FLR, whereas a lower
+578800.0000 576960 578800  threshold more aggressively
+580640.0000 578800 580640  selects and executes programs.
+582480.0000 580640 582480  We compare the two approaches we
+584320.0000 582480 584320  propose and a baseline that
+586160.0000 584320 586160  does nothing but
+588000.0000 586160 588000  directly applying the offline parser for online
+589840.0000 588000 589840  use. The upper left
+591680.0000 589840 591680  region has
+593520.0000 591680 593520  the best FLR and cost
+595360.0000 593520 595360  trade-off. We see both of
+597200.0000 595360 597200  our methods beat the baseline by
+599040.0000 597200 599040  a large margin, and they
+600880.0000 599040 600880  perform more similarly on tree
+601240.0000 600880 601200  DST.
+604040.0000 602236 604040  While individual
+605880.0000 604040 605880  function execution is faster,
+607720.0000 605880 607720  there tends to be more run
+609560.0000 607720 609560  executions and lower
+610280.0000 609560 610240  latency reduction room.
+612360.0000 610556 612360  While individual
+614200.0000 612360 614200  function execution is
+617880.0000 614200 617880  slower, there is more room for FLR improvement.
+619720.0000 617880 619720  Our two approaches achieve better
+621560.0000 619720 621560  performance in different
+623400.0000 621560 623400  cost regions.
+625240.0000 623400 625240  Overall, we achieve 30 to
+627080.0000 625240 627080  63%
+628920.0000 627080 628920  relative latency
+630760.0000 628920 630760  reduction depending on execution
+631920.0000 630760 631880  time and allowed cost.
+636000.0000 634172 636000  Finally, we have
+637840.0000 636000 637840  a breakdown of average latency
+639680.0000 637840 639680  reduction in tokens for
+641520.0000 639680 641520  each type of the function node
+643360.0000 641520 643360  when the allowed cost is
+645200.0000 643360 645200  three run
+648880.0000 645200 648880  executions. As we can see, there are gains all over the
+650720.0000 648880 650720  board. There are also some functions on which
+651040.0000 650720 651000  we gain.
+652880.0000 650940 652780  Impressive
+654720.0000 652780 654620  latency reduction where the red bar
+656560.0000 654620 656460  is much longer, such as
+658400.0000 656460 658300  find manager and
+660240.0000 658300 660140  recipient. These are low level
+662080.0000 660140 661980  functions that do not have much
+663080.0000 661980 662940  dependency on others.
+666760.0000 664956 666760  In
+668600.0000 666760 668600  conclusion, we propose online semantic
+670440.0000 668600 670440  parsing as a new task to
+672280.0000 670440 672280  explore with the rigorous latency
+674120.0000 672280 674120  reduction metric. With a
+675960.0000 674120 675960  strong graph based semantic
+677800.0000 675960 677800  parser, we achieve relatively good
+679640.0000 677800 679640  latency reduction, either through
+681480.0000 679640 681480  a pipeline approach with outline
+683320.0000 681480 683320  completion and a full parser, or
+685160.0000 683320 685160  directly through a learned parser on the
+687000.0000 685160 687000  prefixes.
+688840.0000 687000 688840  Moreover, our approach can be
+690680.0000 688840 690680  a general framework and can be
+692520.0000 690680 692520  applied to other executable
+694360.0000 692520 694360  semantic representations in different
+696200.0000 694360 696200  domains. Future works could
+698040.0000 696200 698040  explore smarter prediction and
+699880.0000 698040 699880  execution integration
+701160.0000 699880 701120  method. Thanks for your listening.
